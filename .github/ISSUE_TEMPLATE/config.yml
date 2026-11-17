@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Billing, plans and account help
+    url: mailto:info@ipoguru.in
+    about: Payments, upgrades, key problems. Please don't post account details in a public issue.
+  - name: Live API docs and pricing
+    url: https://www.ipoguru.in/ipo-gmp-details-developer-api
+    about: The official developer page.
