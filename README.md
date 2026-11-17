@@ -1,6 +1,8 @@
 <!-- Generated from the live API reference. Edit the source on the server and re-run the export, not this file. -->
 # IPO Guru API: IPO GMP, subscription & IPO calendar data for India
 
+![IPO Guru API: IPO GMP, subscription and IPO calendar data for Indian IPOs](assets/ipo-gmp-api.jpg)
+
 A REST API for Indian IPO data: **grey market premium (GMP)**, **live subscription** by category, the **IPO calendar** for Mainboard and SME issues, **anchor investors**, **Offer For Sale (OFS)** bids and **unlisted / pre-IPO share prices**.
 
 This repository holds the public documentation, an [OpenAPI spec](openapi.json) and ready-to-run examples. The API itself is served from `https://www.ipoguru.in/api/v2`.
