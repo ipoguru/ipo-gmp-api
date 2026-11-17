@@ -158,7 +158,7 @@ The full document for one issue: timeline, issue terms, GMP, subscription summar
 | `listing` | object | Listing price, CMP and both gain percentages. `listing.cmp_adjust_factor` is today's shares per IPO share after bonus issues and splits (1 when none); `current_gain_percent` already allows for it. |
 | `lot_calculator` | array | **Basic+.** Retail / S-HNI / B-HNI application tiers with lots, shares and rupee amounts. |
 | `reservation` | array | **Basic+.** Category-wise reservation of the issue. |
-| `shares_offered` | object | **Basic+.** Shares offered to QIB / NII / Retail. |
+| `shares_offered` | object | **Basic+.** Shares on offer per category as the exchange book published them (integers, null where none): `qib` (net of anchor), `nii` (net of the SME market maker), `retail`, `employee`, `shareholder`, `total`, plus `anchor` shares allotted. Final allotted counts are in `basis_of_allotment` on the subscription endpoint. |
 | `company` | object | **Basic+.** About, description, `strengths[]`, `risks[]`, objects of issue, `financials` (headers + rows, ₹ crore), `kpis[]`, promoter profiles and holding pattern. |
 | `contacts` | object | **Basic+.** Company, registrar (with `status_page` and `driver`) and lead managers. |
 | `documents` | object | **Basic+.** RHP, DRHP, anchor and basis-of-allotment links. Frequently null. |
@@ -509,11 +509,12 @@ Bidding figures as they stand right now, as a category → sub-category tree.
 | `categories[].key` | string | Stable machine key — see the category table below. |
 | `categories[].times` | string\|null | Subscription in times, as published. |
 | `categories[].times_value` | number\|null | The same figure parsed to a number. |
-| `categories[].shares_offered / shares_applied` | string\|null | Share counts, as published. |
+| `categories[].shares_offered / shares_applied` | string\|null | Share counts from the exchange book. Offered shares are as the exchange counts them during bidding, which for many issues is at the lower end of the price band — see `basis_of_allotment` for the final counts. QIB is net of anchor; for SME issues NII and Total are net of the market maker, whose shares are not open for bidding. |
 | `categories[].applications` | string\|null | Application count where the exchange reports it. Retail, NII, bNII, sNII and Total carry it during bidding; QIB is filled once the basis of allotment is out (the live exchange feed has no QIB count). |
 | `categories[].demand_crore` | number\|null | Rupee demand in ₹ crore: `shares_applied × demand_price ÷ 1,00,00,000`, 2dp. Present on sub-categories too. |
 | `categories[].sub_categories[]` | array | Finer buckets — FII, MF, bNII/sNII splits, cut-off vs price bids. |
 | `demand_price` | number\|null | Price the demand figures are worked at — the upper end of the price band, where cut-off bids are struck. |
+| `basis_of_allotment` | object\|null | The registrar's final Basis of Allotment, kept apart from the bidding book. Null until allotment is published. `issue_price` (the full price), `total_shares_allotted` (final shares, anchor included), `source`, and `categories[]` keyed `QIB` (with anchor), `QIB_EX_ANCHOR`, `ANCHOR`, `NII`, `BNII`, `SNII`, `RETAIL`, `EMPLOYEE`, `SHAREHOLDER`, `TOTAL`, each with `price`, `times`, `applications`, `shares_applied`, `shares_allotted`, `allottees`, `amount_collected` and `allotment_chance_percent` (allottees ÷ applications). The `TOTAL` row's `price` is a blend when employees or shareholders got a discount; use `issue_price`. |
 | `qib_interest_cost` | object\|null | What it costs a QIB to fund its bid, per share allotted, over `days` (7): `price × qib_times × rate × days ÷ 365`. `funds_per_share` is the money blocked per share allotted; `rates[]` works it at 7–12% a year, with `cost_percent` of the price. Null until QIB bidding starts. |
 
 **Request**
@@ -586,7 +587,8 @@ curl -H "X-API-KEY: $IPOGURU_API_KEY" "https://www.ipoguru.in/api/v2/ipos/skyway
 
 **Notes**
 
-- For Mainboard issues the consolidated NSE figure is used. Never add BSE and NSE numbers together — they are already consolidated, and summing them double-counts.
+- For Mainboard issues the consolidated NSE figure is used. Never add BSE and NSE numbers together — they are already consolidated, and summing them double-counts. BSE SME issues come from BSE and NSE SME issues from NSE.
+- The bidding book and `basis_of_allotment` differ by design: the book counts bids before technical rejections and offered shares as the exchange states them during bidding; the allotment counts are final, at the issue price. A subscription multiple worked from `basis_of_allotment` will usually be a little different from the live `times`.
 - Empty strings appear in `times` where the exchange published a blank. Prefer `times_value`, which is `null` in that case.
 - `demand_crore` and `qib_interest_cost` are calculated by IPO Guru from the published share counts — the exchanges publish no rupee figures. `amount` is a legacy field and is always null; use `demand_crore`.
 - `qib_interest_cost` is arithmetic, not advice: it shows the listing premium a fully leveraged QIB needs just to cover its funding, not whether to bid.

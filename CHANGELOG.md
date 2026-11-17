@@ -3,6 +3,17 @@
 
 Changes to the v2 API, newest first. Watch this repository (Watch → Custom → Releases) to hear about new ones.
 
+## 2026-11-17 · Fixed: Subscription figures corrected, and final allotment figures added
+
+Fixes reported by an API client: SME NII figures included market-maker shares, a few Total rows were missing employee shares, and shares_offered on the IPO detail was nearly always empty. The final Basis of Allotment is now served beside the live bidding book.
+
+- SME issues: `NII` and `TOTAL` on `/ipos/{slug}/subscription` no longer count the market maker's shares, which nobody can bid for. NII is now bNII + sNII, matching the Basis of Allotment, and the multiples are recalculated. Antala Industries NII moves from 37.38x to 50.29x and Total from 12.20x to 12.85x. History snapshots are corrected too.
+- A few mainboard issues had a `TOTAL` row without the employee quota, which pushed the multiple slightly up (Bonfiglioli Transmissions read 46.13x; NSE says 46.06x). These now match the exchange.
+- `shares_offered` on `/ipos/{slug}` (Basic+) was null for almost every issue. It now carries integer counts for `qib`, `nii`, `retail`, `employee`, `shareholder`, `total` and `anchor`.
+- New block `basis_of_allotment` on `/ipos/{slug}/subscription`: the registrar's final figures per category: applications, shares applied and allotted, allottees, `allotment_chance_percent` and `price`, plus `issue_price` and `total_shares_allotted` (final shares, anchor included). Null until allotment is published.
+
+See: [GET /ipos/{slug}/subscription](docs/endpoints.md#ep-subscription) · [GET /ipos/{slug}](docs/endpoints.md#ep-ipo-detail)
+
 ## 2026-11-11 · Fixed: Current gain now allows for bonus issues and stock splits
 
 After a bonus or split, current_gain_percent compared today's share price with the price of an IPO share, so a 1:1 bonus read as a 50% fall. It is now worked out per IPO share.
