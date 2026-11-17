@@ -181,6 +181,10 @@ Keep it readable: not hidden with CSS, behind a click or shown to only some visi
 
 The full terms are on the [developer page](https://www.ipoguru.in/ipo-gmp-details-developer-api#doc-terms).
 
+## AI assistant skills
+
+Want answers in Claude, ChatGPT or Gemini instead of code? [ipoguru/ipo-analysis-skills](https://github.com/ipoguru/ipo-analysis-skills) has ready-made IPO analysis skills (fundamentals, red flags, a GMP + subscription + analyst-sentiment screener) that read IPO Guru data. No API key needed.
+
 ## Support
 
 - Questions about this documentation or the examples: [open an issue](../../issues). **Never paste your API key in an issue.**
