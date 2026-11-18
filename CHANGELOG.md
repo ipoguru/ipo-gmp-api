@@ -3,6 +3,15 @@
 
 Changes to the v2 API, newest first. Watch this repository (Watch → Custom → Releases) to hear about new ones.
 
+## 2026-11-18 · Fixed: shares_offered filled before bidding opens
+
+Reported by an API client: shares_offered on the IPO detail was empty for issues that had not opened yet (Watrana Rentals, Mahanadi Coalfields). It now falls back to the offer document's reservation table, and a new source key says which figures you are reading.
+
+- `shares_offered` on `/ipos/{slug}` (Basic+) carries the offer document's share split until the exchange book is published. Watrana Rentals now reads QIB 23,22,000, NII 6,98,400, Retail 16,29,600, Total 46,50,000.
+- New key `shares_offered.source`: `exchange` (live book: QIB net of anchor), `offer_document` (prospectus: QIB includes the anchor portion, Total is the sum of the categories) or `null`.
+
+See: [GET /ipos/{slug}](docs/endpoints.md#ep-ipo-detail)
+
 ## 2026-11-17 · Fixed: Subscription figures corrected, and final allotment figures added
 
 Fixes reported by an API client: SME NII figures included market-maker shares, a few Total rows were missing employee shares, and shares_offered on the IPO detail was nearly always empty. The final Basis of Allotment is now served beside the live bidding book.
